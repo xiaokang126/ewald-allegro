@@ -1,0 +1,132 @@
+# This file is a part of the `allegro` package. Please see LICENSE and README at the root for information on using it.
+import torch
+
+from ._contract import Contracter
+
+import itertools
+from typing import Dict
+
+
+# we do lazy imports of cueq to allow `nequip-package` to pick this file up even if cueq is not installed
+# since `nequip-package` ignores files if it errors on loading the file
+
+
+def allegro_tp_desc(
+    irreps1,
+    irreps2,
+    irreps3,
+    tp_path_channel_coupling: bool,
+):
+    """Construct the Allegro version of channelwise tensor product descriptor.
+
+    subscripts: ``weights[u],lhs[iu],rhs[ju],output[ku]``
+
+    Args:
+        irreps1 (Irreps): Irreps of the first operand.
+        irreps2 (Irreps): Irreps of the second operand.
+        irreps3 (Irreps): Irreps of the output to consider.
+    """
+    import cuequivariance as cue
+
+    common_mul = irreps1[0].mul
+
+    if tp_path_channel_coupling:
+        d = cue.SegmentedTensorProduct.from_subscripts("u,iu,ju,ku+ijk")
+    else:
+        d = cue.SegmentedTensorProduct.from_subscripts(",iu,ju,ku+ijk")
+
+    for mul, ir in irreps1:
+        assert mul == common_mul
+        d.add_segment(1, (ir.dim, mul))
+    for mul, ir in irreps2:
+        assert mul == common_mul
+        d.add_segment(2, (ir.dim, mul))
+    for mul, ir in irreps3:
+        d.add_segment(3, (ir.dim, common_mul))
+
+    for (i3, (mul3, ir3)), (i1, (mul1, ir1)), (i2, (mul2, ir2)) in itertools.product(
+        enumerate(irreps3), enumerate(irreps1), enumerate(irreps2)
+    ):
+        if ir3 in ir1 * ir2:
+            for cg in cue.clebsch_gordan(ir1, ir2, ir3):
+                d.add_path(None, i1, i2, i3, c=cg)
+
+    return cue.EquivariantPolynomial(
+        [
+            cue.IrrepsAndLayout(irreps1.new_scalars(d.operands[0].size), cue.ir_mul),
+            cue.IrrepsAndLayout(irreps1, cue.ir_mul),
+            cue.IrrepsAndLayout(irreps2, cue.ir_mul),
+        ],
+        [cue.IrrepsAndLayout(irreps3, cue.ir_mul)],
+        cue.SegmentedPolynomial.eval_last_operand(d),
+    )
+
+
+class CuEquivarianceContracter(Contracter):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        import cuequivariance_torch as cuet
+        import cuequivariance as cue
+
+        ir1 = cue.Irreps("O3", [(self.mul, ir) for _, ir in self.irreps_in1])
+        ir2 = cue.Irreps("O3", [(self.mul, ir) for _, ir in self.irreps_in2])
+        irout = cue.Irreps("O3", [(self.mul, ir) for _, ir in self.irreps_out])
+        self.cuet_sp = cuet.SegmentedPolynomial(
+            allegro_tp_desc(
+                ir1, ir2, irout, self.path_channel_coupling
+            ).polynomial.flatten_coefficient_modes(),
+            method="uniform_1d",
+            # self.w3j is of `model_dtype`
+            math_dtype=self.w3j.dtype,
+        )
+
+    def forward(
+        self,
+        x1: torch.Tensor,
+        x2: torch.Tensor,
+        idxs: torch.Tensor,
+    ) -> torch.Tensor:
+        # NOTE: the reason for some duplicated code is because TorchScript doesn't support super() calls
+        # see https://github.com/pytorch/pytorch/issues/42885
+
+        x1 = x1.reshape(-1, self.mul, self.base_dim1)
+        x2 = x2.reshape(-1, self.mul, self.base_dim2)
+
+        if x1.is_cuda and self.num_paths >= 1:
+            empty_dict: Dict[int, torch.Tensor] = {}  # for torchscript
+
+            if self.path_channel_coupling:
+                weights = self.weights.transpose(0, 1).reshape(
+                    1, self.num_paths * self.mul
+                )
+            else:
+                weights = self.weights.reshape(1, self.num_paths)
+
+            cue_out_edges = self.cuet_sp(
+                [
+                    weights,
+                    x1.transpose(1, 2)
+                    .contiguous()
+                    .view(
+                        x1.size(0), self.base_dim1 * self.mul
+                    ),  # (edges, irreps * mul)
+                    x2.transpose(1, 2)
+                    .contiguous()
+                    .view(
+                        x2.size(0), self.base_dim2 * self.mul
+                    ),  # (atoms, irreps * mul)
+                ],
+                {2: idxs},  # input indices
+                empty_dict,  # output shapes
+                empty_dict,  # output indices
+            )[0]
+
+            # reshape and transpose back to (edges, mul, irreps_out)
+            return (
+                cue_out_edges.view(x1.size(0), self.base_dim_out, self.mul)
+                .transpose(1, 2)
+                .contiguous()
+            )
+        else:
+            return self._contract_conv(x1, x2, idxs)

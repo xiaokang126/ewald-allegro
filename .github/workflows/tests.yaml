@@ -1,0 +1,54 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# yamllint disable rule:line-length
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pre-commit
+        run: pip install pre-commit
+      - name: Run pre-commit
+        run: pre-commit run --all-files --show-diff-on-failure
+
+  tests:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        torch-version: ["2.*"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install PyTorch
+        env:
+          TORCH: "${{ matrix.torch-version }}"
+        run: |
+          pip install torch==${TORCH} --index-url https://download.pytorch.org/whl/cpu --upgrade
+      - name: Install Test Dependencies
+        run: |
+          pip install nequip e3nn ase numpy scipy matplotlib setuptools wheel pytest
+          pip install --upgrade-strategy only-if-needed .
+      - name: Run Tests
+        run: |
+          PYTHONHASHSEED=0 python -m pytest tests/ -v --tb=short -x
+# yamllint enable

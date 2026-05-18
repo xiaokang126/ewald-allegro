@@ -68,7 +68,7 @@ def test_model_creation():
     model = get_model()
     assert model is not None
     num_params = model.get_num_params()
-    assert num_params > 0, f"Model has zero parameters!"
+    assert num_params > 0, "Model has zero parameters!"
     print(f"  Model created: {num_params:,} parameters")
 
 
@@ -102,7 +102,7 @@ def test_forward_pass():
     assert output["per_atom_energy"].squeeze().shape == (n_atoms,), \
         f"per_atom_energy should be (N,), got {output['per_atom_energy'].shape}"
 
-    print(f"  Forward pass OK")
+    print("  Forward pass OK")
     print(f"    E_total = {energy.item():.6f}")
     print(f"    E_short = {energy_short.item():.6f}")
     print(f"    E_long  = {energy_long.item():.6f}")
@@ -217,7 +217,7 @@ if __name__ == "__main__":
         try:
             test_fn()
             passed += 1
-            print(f"    [PASS]")
+            print("    [PASS]")
         except Exception as e:
             print(f"    [FAIL]: {e}")
         print()

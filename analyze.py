@@ -369,7 +369,7 @@ def fig1_prediction_scatter(ref, ewald, short, save_path):
 
     fig.savefig(save_path)
     plt.close(fig)
-    print(f"  [OK] Fig1 saved")
+    print("  [OK] Fig1 saved")
 
 
 def fig2_error_distribution(ref, ewald, short, save_path):
@@ -405,7 +405,7 @@ def fig2_error_distribution(ref, ewald, short, save_path):
 
     fig.savefig(save_path)
     plt.close(fig)
-    print(f"  [OK] Fig2 saved")
+    print("  [OK] Fig2 saved")
 
 
 def fig3_distance_bucket_mae(buckets, short_mae, ewald_mae, counts, r_max, save_path):
@@ -439,7 +439,7 @@ def fig3_distance_bucket_mae(buckets, short_mae, ewald_mae, counts, r_max, save_
 
     fig.savefig(save_path)
     plt.close(fig)
-    print(f"  [OK] Fig3 saved")
+    print("  [OK] Fig3 saved")
 
 
 def fig4_error_vs_longrange(ref, ewald, short, ewald_contrib, save_path):
@@ -471,7 +471,7 @@ def fig4_error_vs_longrange(ref, ewald, short, ewald_contrib, save_path):
 
     fig.savefig(save_path)
     plt.close(fig)
-    print(f"  [OK] Fig4 saved")
+    print("  [OK] Fig4 saved")
 
 
 def fig5_size_scaling(sizes, short_mae, ewald_mae, counts, save_path):
@@ -508,7 +508,7 @@ def fig5_size_scaling(sizes, short_mae, ewald_mae, counts, save_path):
 
     fig.savefig(save_path)
     plt.close(fig)
-    print(f"  [OK] Fig5 saved")
+    print("  [OK] Fig5 saved")
 
 
 def fig6_charge_analysis(charges, total_charge, save_path):
@@ -548,7 +548,7 @@ def fig6_charge_analysis(charges, total_charge, save_path):
 
     fig.savefig(save_path)
     plt.close(fig)
-    print(f"  [OK] Fig6 saved")
+    print("  [OK] Fig6 saved")
 
 
 def fig_summary_dashboard(metrics_e, metrics_s, save_path):
@@ -594,7 +594,7 @@ def fig_summary_dashboard(metrics_e, metrics_s, save_path):
 
     fig.savefig(save_path)
     plt.close(fig)
-    print(f"  [OK] Dashboard saved")
+    print("  [OK] Dashboard saved")
 
 
 # ══════════════════════════════════════════════════════════════
@@ -622,12 +622,12 @@ def main():
             use_demo = True
 
     if not use_demo and val_list is not None and len(val_list) > 0:
-        print(f"\n  Running model predictions...")
+        print("\n  Running model predictions...")
         data = get_model_predictions(model, val_list)
         ewald_mag = np.abs(data["ewald_contrib"])
         if ewald_mag.mean() < 1e-6:
             print(f"  NOTE: Ewald contribution negligible ({ewald_mag.mean():.2e} eV)")
-            print(f"  Model ignores Ewald term. Using synthetic data to show expected behavior.")
+            print("  Model ignores Ewald term. Using synthetic data to show expected behavior.")
             use_demo = True
             data = generate_synthetic_data(200)
         else:
@@ -638,7 +638,7 @@ def main():
     metrics_e = calc_metrics(data["ref"], data["ewald"])
     metrics_s = calc_metrics(data["ref"], data["short"])
 
-    print(f"\n  Metrics:")
+    print("\n  Metrics:")
     print(f"  {'Metric':<15} {'Ewald-Allegro':<18} {'Short-Only':<18} {'Improvement':<10}")
     print(f"  {'-'*61}")
     for key in ["MAE", "RMSE", "MaxError"]:
@@ -648,7 +648,7 @@ def main():
         print(f"  {key:<15} {v_e:<18.6f} {v_s:<18.6f} {impr:<+8.1f}%")
     print(f"  {'R2':<15} {metrics_e['R2']:<18.4f} {metrics_s['R2']:<18.4f}")
 
-    print(f"\n  Generating figures...")
+    print("\n  Generating figures...")
     r_max = 5.0
 
     fig1_prediction_scatter(data["ref"], data["ewald"], data["short"],

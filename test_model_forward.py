@@ -11,7 +11,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"设备: {device}")
 
 # 加载一个结构
-from ase.io import read
+from ase.io import read  # noqa: E402
 data_dir = os.path.join(os.path.dirname(__file__), "data")
 atoms = read(os.path.join(data_dir, "train.xyz"), index=0)
 
@@ -27,7 +27,7 @@ print(f"晶胞:\n{cell.cpu().numpy()}")
 print(f"能量: {energy.item():.4f} eV")
 
 # 创建 v2 模型
-from allegro.model.ewald_allegro_v2 import EwaldAllegroModelV2
+from allegro.model.ewald_allegro_v2 import EwaldAllegroModelV2  # noqa: E402
 
 model = EwaldAllegroModelV2(
     type_names=["H", "O"],

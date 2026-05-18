@@ -798,7 +798,7 @@ def cmd_convert(args):
     test_energies = [d["energy"] for d in test_data]
 
     log.info(f"\n{'='*60}")
-    log.info(f"最终数据集:")
+    log.info("最终数据集:")
     log.info(f"  训练集: {len(train_data)} 帧")
     log.info(f"  测试集: {len(test_data)} 帧")
     log.info(f"  能量范围: [{min(train_energies + test_energies):.4f}, "
@@ -848,7 +848,7 @@ def cmd_convert(args):
             for a in anomalies:
                 f.write(f"{a['step']:<8} {a['energy']:<16.6f} {a['reason']}\n")
     log.info(f"  数据报告: {report_path}")
-    log.info(f"\n完成！可用 train.py 开始训练，或用 test_model_forward.py 验证。")
+    log.info("\n完成！可用 train.py 开始训练，或用 test_model_forward.py 验证。")
 
 
 # ═══════════════════════════════════════════════════════════════

@@ -374,7 +374,7 @@ if torch.cuda.is_available():
 
         # backward wrt input1
         indptr_bwd1, ks_bwd1, l2s_bwd1, vals_bwd1, p_to_nnz_mapper_bwd1 = (
-            _metadata_helper(I, coo[:, [0, 2, 1]], coovalue, p_to_nnz_values)
+            _metadata_helper(I_idx, coo[:, [0, 2, 1]], coovalue, p_to_nnz_values)
         )
 
         # backward wrt input2

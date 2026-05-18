@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"设备: {device}")
 
-from ase.io import read
+from ase.io import read  # noqa: E402
 
 class WaterDataset(Dataset):
     def __init__(self, xyz_path, split="train", train_ratio=0.8):
@@ -45,7 +45,7 @@ val_set = WaterDataset(os.path.join(data_dir, "train.xyz"), "val")
 train_loader = DataLoader(train_set, batch_size=1, shuffle=True, collate_fn=collate_fn)
 val_loader = DataLoader(val_set, batch_size=1, collate_fn=collate_fn)
 
-from allegro.model.ewald_allegro_v2 import EwaldAllegroModelV2
+from allegro.model.ewald_allegro_v2 import EwaldAllegroModelV2  # noqa: E402
 
 model = EwaldAllegroModelV2(
     type_names=["H", "O"], r_max=5.0, num_bessels=8,

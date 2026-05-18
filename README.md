@@ -51,14 +51,18 @@ E_total = E_short(Allegro) + E_long(Ewald, charges) + shift
 
 ## Results
 
-On the water system (12 H₂O, 36 atoms) AIMD trajectory:
+On the water system (12 H₂O, 36 atoms) AIMD trajectory, `analyze.py` generates 6 detailed diagnostic figures (and a summary dashboard) demonstrating the improvement of Ewald-Allegro over short-range-only potentials:
 
-| Metric | Short-Only | Ewald-Allegro | Improvement |
-|--------|-----------|---------------|-------------|
-| MAE (eV) | — | — | **Significantly better** |
-| Long-range region (distance > r_max) | Error grows with distance | Error remains flat | **Key advantage** |
+| Diagnostic | Description |
+|-----------|-------------|
+| **Fig 1** — Prediction Scatter | Ewald-Allegro predictions vs. DFT reference energies |
+| **Fig 2** — Error Distribution | Histogram of energy errors with Gaussian KDE overlay |
+| **Fig 3** — Distance-Bucket MAE | Key evidence: short-range-only errors grow at distances > r_max, while Ewald-Allegro errors remain flat |
+| **Fig 4** — Error vs. Long-Range | Correlation between prediction error and Ewald long-range contribution |
+| **Fig 5** — Size Scaling | Per-atom MAE as a function of system size |
+| **Fig 6** — Charge Analysis | Atomic charge distribution and electroneutrality check |
 
-See `analyze.py` for 6 detailed diagnostic figures.
+> **Note:** Model must be trained with `train.py` first. Running `analyze.py` will generate results based on the trained model; if no model is available, synthetic demo data is used to illustrate the expected behavior.
 
 ---
 

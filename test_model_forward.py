@@ -77,7 +77,7 @@ try:
 
     loss = (output['energy'] - target) ** 2
     loss.backward()
-    
+
     # 检查梯度
     total_grad = 0
     for name, p in model.named_parameters():

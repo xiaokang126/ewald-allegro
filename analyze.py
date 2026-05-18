@@ -22,7 +22,6 @@ import torch
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 from matplotlib import rcParams
 from scipy import stats
 
@@ -144,7 +143,7 @@ def get_model_predictions(model, atoms_list):
 def generate_synthetic_data(n_frames=200):
     """Generate synthetic data for demo mode."""
     np.random.seed(42)
-    natoms = np.random.randint(24, 48, n_frames)
+    _ = np.random.randint(24, 48, n_frames)  # number of atoms per frame (unused here)
     ref = np.random.normal(-178, 2, n_frames)
     base_err_s = 0.015 + 0.05 * np.random.random(n_frames)
     base_err_e = 0.008

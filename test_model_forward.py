@@ -2,7 +2,9 @@
 """
 测试 Ewald-Allegro v2 模型能否正确前向传播。
 """
-import os, sys, torch
+import os
+import sys
+import torch
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

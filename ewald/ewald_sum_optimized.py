@@ -122,7 +122,6 @@ class EwaldSummationOptimized(torch.nn.Module):
         4. 逆 FFT 回实空间 — O(M log M)
         5. 在网格点上计算能量 — O(M)
         """
-        N = charges.shape[0]
         nx, ny, nz = self.grid_n
         device = charges.device
 

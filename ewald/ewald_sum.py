@@ -59,7 +59,6 @@ class EwaldSummation(torch.nn.Module):
         返回:
             E_recip: 倒空间能量标量
         """
-        N = charges.shape[0]
         nx, ny, nz = self.grid_n
         device = charges.device
 
@@ -75,9 +74,9 @@ class EwaldSummation(torch.nn.Module):
         frac_pos = frac_pos % 1.0
 
         # 构建网格坐标
-        grid_x = torch.arange(nx, device=device) / nx
-        grid_y = torch.arange(ny, device=device) / ny
-        grid_z = torch.arange(nz, device=device) / nz
+        _grid_x = torch.arange(nx, device=device) / nx
+        _grid_y = torch.arange(ny, device=device) / ny
+        _grid_z = torch.arange(nz, device=device) / nz
 
         # 使用高斯涂抹将电荷分配到网格
         # 每个原子对周围网格点贡献电荷

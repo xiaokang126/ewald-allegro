@@ -11,7 +11,7 @@ import torch.nn as nn
 from e3nn import o3
 from nequip.data import AtomicDataDict
 from nequip.nn import (
-    SequentialGraphNetwork, scatter,
+    scatter,
     ScalarMLP, AtomwiseReduce,
 )
 from nequip.nn.embedding import (
@@ -148,7 +148,6 @@ class AllegroShortRangeModel(nn.Module):
         )
 
     def build_data(self, pos, atom_types, cell):
-        device = pos.device
         N = pos.shape[0]
         edge_index, edge_vec, edge_len = neighbor_list_pbc(pos, cell, self.r_max)
 

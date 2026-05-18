@@ -38,7 +38,6 @@ import argparse
 import random
 import shutil
 import logging
-import subprocess
 import numpy as np
 from collections import Counter
 
@@ -90,7 +89,7 @@ def cmd_check_deps():
             print(f"  CUDA version:   {torch.version.cuda}")
             print(f"  GPU device:     {torch.cuda.get_device_name(0)}")
             print(f"  GPU memory:     {torch.cuda.get_device_properties(0).total_mem / 1024**3:.1f} GB")
-    except:
+    except Exception:
         print("  CUDA: torch not available")
 
     print()

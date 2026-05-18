@@ -336,7 +336,7 @@ if torch.cuda.is_available():
 
     def _initialize_metadata(w3j):
         assert len(w3j.shape) == 4
-        P, I, J, K = w3j.shape
+        P, I_idx, J, K = w3j.shape
 
         # push all the non-zeros from pijk -> ijk which is what we do in the weight computation
         w3j_sum = torch.sum(w3j, dim=0)

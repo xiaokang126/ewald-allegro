@@ -3,7 +3,10 @@
 训练 Ewald-Allegro v2 模型。
 数据: allegro/data/train.xyz (水的 AIMD 轨迹)
 """
-import os, sys, torch, numpy as np
+import os
+import sys
+import torch
+import numpy as np
 from torch.utils.data import Dataset, DataLoader
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

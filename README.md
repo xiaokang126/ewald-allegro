@@ -211,6 +211,5 @@ If this work is helpful in your research, please cite:
 
 This project is open source under the MIT License.
 - Upstream Allegro code: Copyright (c) 2022 The President and Fellows of Harvard College, Copyright (c) 2025 The NequIP Developers
-- New contributions: Copyright (c) 2026 YiYuan Tao
 
 See [LICENSE](LICENSE) for details.

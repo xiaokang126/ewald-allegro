@@ -1,6 +1,5 @@
 # Project-specific
 data/
-plot/*.png
 *.pt
 
 # Raw VASP / MD data
